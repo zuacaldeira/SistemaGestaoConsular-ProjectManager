@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { Observable } from 'rxjs';
-import { Task, TaskNote, Prompt } from '../models/task.model';
+import { Task, TaskNote, TaskExecution, Prompt } from '../models/task.model';
 
 interface Page<T> {
   content: T[];
@@ -57,5 +57,13 @@ export class TaskService {
 
   addNote(id: number, note: Partial<TaskNote>): Observable<TaskNote> {
     return this.api.post<TaskNote>(`/tasks/${id}/notes`, note);
+  }
+
+  getExecutions(id: number): Observable<TaskExecution[]> {
+    return this.api.get<TaskExecution[]>(`/tasks/${id}/executions`);
+  }
+
+  addExecution(id: number, data: Partial<TaskExecution>): Observable<TaskExecution> {
+    return this.api.post<TaskExecution>(`/tasks/${id}/executions`, data);
   }
 }
