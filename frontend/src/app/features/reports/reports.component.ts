@@ -46,6 +46,9 @@ interface Report {
             <span class="sprint-name">Sprint {{ report.sprintNumber }}: {{ report.sprintName }}</span>
             <span class="report-type">{{ report.reportType }}</span>
             <span class="report-date">{{ report.generatedAt | datePt }}</span>
+            <button mat-icon-button (click)="downloadPdf(report.id)" title="Descarregar PDF">
+              <mat-icon>picture_as_pdf</mat-icon>
+            </button>
           </div>
           <p class="summary">{{ report.summaryPt }}</p>
           <p class="summary-en">{{ report.summaryEn }}</p>
@@ -96,6 +99,17 @@ export class ReportsComponent implements OnInit {
         this.generating = false;
       },
       error: () => { this.generating = false; }
+    });
+  }
+
+  downloadPdf(reportId: number): void {
+    this.api.getBlob(`/reports/${reportId}/pdf`).subscribe(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `relatorio-${reportId}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
     });
   }
 }

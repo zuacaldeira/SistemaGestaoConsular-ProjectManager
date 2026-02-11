@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { DashboardService } from '../../core/services/dashboard.service';
 import { CalendarData, CalendarDay } from '../../core/models/dashboard.model';
 import { StatusBadgeComponent } from '../../shared/components/status-badge.component';
@@ -11,7 +12,7 @@ import { StatusBadgeComponent } from '../../shared/components/status-badge.compo
 @Component({
   selector: 'app-calendar',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatCardModule, MatButtonModule, MatIconModule, StatusBadgeComponent],
+  imports: [CommonModule, RouterLink, MatCardModule, MatButtonModule, MatIconModule, MatTooltipModule, StatusBadgeComponent],
   template: `
     <div class="cal-header">
       <button mat-icon-button (click)="prevMonth()"><mat-icon>chevron_left</mat-icon></button>
@@ -43,7 +44,8 @@ import { StatusBadgeComponent } from '../../shared/components/status-badge.compo
               <span class="block-reason" [title]="day.blockReason">{{ day.blockReason }}</span>
             }
             @if (day.task) {
-              <a class="task-link" [routerLink]="['/tasks', day.task.id]">
+              <a class="task-link" [routerLink]="['/tasks', day.task.id]"
+                 [matTooltip]="day.task.title + ' (' + day.task.plannedHours + 'h)'">
                 <app-status-badge [status]="day.task.status" />
                 <span class="task-code">{{ day.task.taskCode }}</span>
               </a>

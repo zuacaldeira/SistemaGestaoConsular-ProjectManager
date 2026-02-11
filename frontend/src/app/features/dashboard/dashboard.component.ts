@@ -63,6 +63,16 @@ import { HoursPipe } from '../../shared/pipes/hours.pipe';
               }
             </ul>
           }
+          @if (dashboard.todayTask.validationCriteria?.length) {
+            <div class="validation-section">
+              <h4>Critérios de Validação</h4>
+              <ul class="validation-list">
+                @for (v of dashboard.todayTask.validationCriteria; track v) {
+                  <li><mat-icon class="check-icon">check_circle_outline</mat-icon> {{ v }}</li>
+                }
+              </ul>
+            </div>
+          }
           <div class="today-actions">
             <a mat-raised-button class="btn-primary" [routerLink]="['/tasks', dashboard.todayTask.id]">
               <mat-icon>visibility</mat-icon> Ver Tarefa
@@ -132,6 +142,11 @@ import { HoursPipe } from '../../shared/pipes/hours.pipe';
     .today-card h3 { margin: 8px 0 12px; }
     .deliverables { margin: 0 0 16px; padding-left: 20px; }
     .deliverables li { margin: 4px 0; color: var(--text-secondary); }
+    .validation-section { margin-bottom: 16px; }
+    .validation-section h4 { margin: 0 0 8px; font-size: 14px; color: var(--text-secondary); }
+    .validation-list { list-style: none; padding: 0; margin: 0; }
+    .validation-list li { display: flex; align-items: center; gap: 6px; margin: 4px 0; font-size: 13px; color: var(--color-green); }
+    .check-icon { font-size: 16px; width: 16px; height: 16px; color: var(--color-green); }
     .today-actions { display: flex; gap: 12px; }
     .sprint-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
     .sprint-mini { padding: 12px; border-left: 4px solid; }

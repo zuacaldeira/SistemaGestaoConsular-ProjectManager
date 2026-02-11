@@ -76,6 +76,28 @@ import { HoursPipe } from '../../shared/pipes/hours.pipe';
           }
         </div>
 
+        <!-- Weekly Activity -->
+        @if (data.weeklyActivity) {
+          <h2>Actividade Semanal</h2>
+          <div class="weekly-row">
+            <mat-card class="weekly-card">
+              <mat-icon>event</mat-icon>
+              <div class="weekly-val">{{ data.weeklyActivity.sessionsThisWeek }}</div>
+              <div class="weekly-lbl">Sessões esta semana</div>
+            </mat-card>
+            <mat-card class="weekly-card">
+              <mat-icon>schedule</mat-icon>
+              <div class="weekly-val">{{ data.weeklyActivity.hoursThisWeek | hours }}</div>
+              <div class="weekly-lbl">Horas esta semana</div>
+            </mat-card>
+            <mat-card class="weekly-card">
+              <mat-icon>check_circle</mat-icon>
+              <div class="weekly-val">{{ data.weeklyActivity.tasksCompletedThisWeek }}</div>
+              <div class="weekly-lbl">Tarefas concluídas</div>
+            </mat-card>
+          </div>
+        }
+
         <!-- Milestones -->
         <h2>Marcos do Projecto</h2>
         <div class="milestones">
@@ -118,6 +140,11 @@ import { HoursPipe } from '../../shared/pipes/hours.pipe';
     .sprint-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary); margin-top: 8px; }
     .sprint-dates { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
     .sprint-focus { font-size: 12px; color: var(--text-secondary); margin-top: 4px; font-weight: 600; }
+    .weekly-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+    .weekly-card { padding: 20px; text-align: center; }
+    .weekly-card mat-icon { color: var(--angola-gold); font-size: 28px; width: 28px; height: 28px; margin-bottom: 8px; }
+    .weekly-val { font-size: 28px; font-weight: 700; }
+    .weekly-lbl { font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-top: 4px; }
     h2 { text-align: center; margin-bottom: 16px; }
     .milestones { display: flex; flex-direction: column; gap: 8px; }
     .milestone { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--surface); border-radius: 8px; }

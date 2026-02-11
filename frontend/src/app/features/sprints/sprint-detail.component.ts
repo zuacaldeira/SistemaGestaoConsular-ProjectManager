@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, KeyValuePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,7 +17,7 @@ import { HoursPipe } from '../../shared/pipes/hours.pipe';
   selector: 'app-sprint-detail',
   standalone: true,
   imports: [CommonModule, RouterLink, MatCardModule, MatButtonModule, MatIconModule,
-    StatusBadgeComponent, ProgressBarComponent, DatePtPipe, HoursPipe],
+    StatusBadgeComponent, ProgressBarComponent, DatePtPipe, HoursPipe, KeyValuePipe],
   template: `
     <a mat-button routerLink="/sprints"><mat-icon>arrow_back</mat-icon> Voltar</a>
 
@@ -46,18 +46,23 @@ import { HoursPipe } from '../../shared/pipes/hours.pipe';
       }
 
       <h3>Tarefas</h3>
-      <div class="task-list">
-        @for (task of tasks; track task.id) {
-          <a class="task-row" [routerLink]="['/tasks', task.id]">
-            <app-status-badge [status]="task.status" />
-            <span class="code">{{ task.taskCode }}</span>
-            <span class="title">{{ task.title }}</span>
-            <span class="date">{{ task.sessionDate | datePt }}</span>
-            <span class="day">{{ task.dayOfWeek }}</span>
-            <span class="hours">{{ task.plannedHours | hours }}</span>
-          </a>
-        }
-      </div>
+      @for (entry of tasksByWeek | keyvalue:weekOrder; track entry.key) {
+        <div class="week-group">
+          <div class="week-header">Semana {{ entry.key }}</div>
+          <div class="task-list">
+            @for (task of entry.value; track task.id) {
+              <a class="task-row" [routerLink]="['/tasks', task.id]">
+                <app-status-badge [status]="task.status" />
+                <span class="code">{{ task.taskCode }}</span>
+                <span class="title">{{ task.title }}</span>
+                <span class="date">{{ task.sessionDate | datePt }}</span>
+                <span class="day">{{ task.dayOfWeek }}</span>
+                <span class="hours">{{ task.plannedHours | hours }}</span>
+              </a>
+            }
+          </div>
+        </div>
+      }
     }
   `,
   styles: [`
@@ -70,6 +75,8 @@ import { HoursPipe } from '../../shared/pipes/hours.pipe';
     .stat { padding: 16px; text-align: center; }
     .stat-val { font-size: 28px; font-weight: 700; }
     .stat-lbl { font-size: 12px; color: var(--text-muted); text-transform: uppercase; }
+    .week-group { margin-bottom: 16px; }
+    .week-header { font-weight: 700; font-size: 14px; color: var(--text-secondary); padding: 8px 12px; background: var(--surface-alt); border-radius: 6px; margin-bottom: 4px; }
     .task-list { display: flex; flex-direction: column; gap: 2px; }
     .task-row {
       display: flex; align-items: center; gap: 12px; padding: 10px 12px;
@@ -85,6 +92,7 @@ export class SprintDetailComponent implements OnInit {
   sprint: Sprint | null = null;
   progress: SprintProgress | null = null;
   tasks: Task[] = [];
+  tasksByWeek: Record<number, Task[]> = {};
 
   constructor(
     private route: ActivatedRoute,
@@ -96,6 +104,22 @@ export class SprintDetailComponent implements OnInit {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.sprintService.findById(id).subscribe(s => this.sprint = s);
     this.sprintService.getProgress(id).subscribe(p => this.progress = p);
-    this.taskService.findAll({ sprint: id, size: 100 }).subscribe(page => this.tasks = page.content);
+    this.taskService.findAll({ sprint: id, size: 100 }).subscribe(page => {
+      this.tasks = page.content;
+      this.groupByWeek();
+    });
   }
+
+  private groupByWeek(): void {
+    this.tasksByWeek = {};
+    for (const task of this.tasks) {
+      const week = task.weekNumber || 0;
+      if (!this.tasksByWeek[week]) this.tasksByWeek[week] = [];
+      this.tasksByWeek[week].push(task);
+    }
+  }
+
+  weekOrder = (a: {key: string}, b: {key: string}): number => {
+    return Number(a.key) - Number(b.key);
+  };
 }
