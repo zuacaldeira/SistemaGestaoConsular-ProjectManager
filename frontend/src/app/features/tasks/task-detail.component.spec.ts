@@ -3,6 +3,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { TaskDetailComponent } from './task-detail.component';
 import { TaskService } from '../../core/services/task.service';
@@ -36,10 +37,13 @@ describe('TaskDetailComponent', () => {
     start: jest.Mock;
     complete: jest.Mock;
     block: jest.Mock;
+    skip: jest.Mock;
     getPrompt: jest.Mock;
     addNote: jest.Mock;
+    getExecutions: jest.Mock;
   };
   let mockSnackBar: { open: jest.Mock };
+  let mockDialog: { open: jest.Mock };
 
   beforeEach(async () => {
     mockTaskService = {
@@ -47,12 +51,18 @@ describe('TaskDetailComponent', () => {
       start: jest.fn().mockReturnValue(of(mockTaskStarted)),
       complete: jest.fn().mockReturnValue(of(mockTaskCompleted)),
       block: jest.fn().mockReturnValue(of(mockTaskBlocked)),
+      skip: jest.fn().mockReturnValue(of({ ...mockTask, status: 'SKIPPED' })),
       getPrompt: jest.fn().mockReturnValue(of(mockPrompt)),
-      addNote: jest.fn().mockReturnValue(of({ id: 1, taskId: 5, noteType: 'INFO', content: 'Test note', author: 'admin', createdAt: '2026-02-07' }))
+      addNote: jest.fn().mockReturnValue(of({ id: 1, taskId: 5, noteType: 'INFO', content: 'Test note', author: 'admin', createdAt: '2026-02-07' })),
+      getExecutions: jest.fn().mockReturnValue(of([]))
     };
 
     mockSnackBar = {
       open: jest.fn()
+    };
+
+    mockDialog = {
+      open: jest.fn().mockReturnValue({ afterClosed: () => of('Missing dependency') })
     };
 
     await TestBed.configureTestingModule({
@@ -64,10 +74,14 @@ describe('TaskDetailComponent', () => {
           useValue: { snapshot: { paramMap: { get: () => '5' } } }
         },
         { provide: TaskService, useValue: mockTaskService },
-        { provide: MatSnackBar, useValue: mockSnackBar }
+        { provide: MatSnackBar, useValue: mockSnackBar },
+        { provide: MatDialog, useValue: mockDialog }
       ]
     }).overrideComponent(TaskDetailComponent, {
-      add: { providers: [{ provide: MatSnackBar, useValue: mockSnackBar }] }
+      add: { providers: [
+        { provide: MatSnackBar, useValue: mockSnackBar },
+        { provide: MatDialog, useValue: mockDialog }
+      ] }
     }).compileComponents();
 
     fixture = TestBed.createComponent(TaskDetailComponent);
@@ -111,7 +125,7 @@ describe('TaskDetailComponent', () => {
   it('should call taskService.complete and update task on completeTask', () => {
     fixture.detectChanges();
     component.completeTask();
-    expect(mockTaskService.complete).toHaveBeenCalledWith(5);
+    expect(mockTaskService.complete).toHaveBeenCalledWith(5, undefined);
     expect(component.task).toBe(mockTaskCompleted);
     expect(mockSnackBar.open).toHaveBeenCalledWith('Tarefa concluída!', 'OK', { duration: 3000 });
   });
@@ -124,8 +138,8 @@ describe('TaskDetailComponent', () => {
 
   it('should call taskService.block with reason on blockTask', () => {
     fixture.detectChanges();
-    jest.spyOn(window, 'prompt').mockReturnValue('Missing dependency');
     component.blockTask();
+    expect(mockDialog.open).toHaveBeenCalled();
     expect(mockTaskService.block).toHaveBeenCalledWith(5, 'Missing dependency');
     expect(component.task).toBe(mockTaskBlocked);
     expect(mockSnackBar.open).toHaveBeenCalledWith('Tarefa bloqueada', 'OK', { duration: 3000 });
@@ -137,16 +151,16 @@ describe('TaskDetailComponent', () => {
     expect(mockTaskService.block).not.toHaveBeenCalled();
   });
 
-  it('should not call block if user cancels the prompt', () => {
+  it('should not call block if user cancels the dialog', () => {
     fixture.detectChanges();
-    jest.spyOn(window, 'prompt').mockReturnValue(null);
+    mockDialog.open.mockReturnValue({ afterClosed: () => of(undefined) });
     component.blockTask();
     expect(mockTaskService.block).not.toHaveBeenCalled();
   });
 
   it('should not call block if user enters empty reason', () => {
     fixture.detectChanges();
-    jest.spyOn(window, 'prompt').mockReturnValue('');
+    mockDialog.open.mockReturnValue({ afterClosed: () => of('') });
     component.blockTask();
     expect(mockTaskService.block).not.toHaveBeenCalled();
   });

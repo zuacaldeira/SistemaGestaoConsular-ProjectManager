@@ -3,6 +3,7 @@ package ao.gov.sgcd.pm.controller;
 import ao.gov.sgcd.pm.config.JwtTokenProvider;
 import ao.gov.sgcd.pm.dto.ReportDTO;
 import ao.gov.sgcd.pm.entity.ReportType;
+import ao.gov.sgcd.pm.service.PdfExportService;
 import ao.gov.sgcd.pm.service.ReportService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ class ReportControllerTest {
 
     @MockBean
     private ReportService reportService;
+
+    @MockBean
+    private PdfExportService pdfExportService;
 
     private ReportDTO buildSampleReport(Long id, Long sprintId) {
         return ReportDTO.builder()

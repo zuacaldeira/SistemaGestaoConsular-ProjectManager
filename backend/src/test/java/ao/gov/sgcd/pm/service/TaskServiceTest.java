@@ -4,10 +4,12 @@ import ao.gov.sgcd.pm.dto.TaskDTO;
 import ao.gov.sgcd.pm.dto.TaskNoteDTO;
 import ao.gov.sgcd.pm.dto.TaskUpdateDTO;
 import ao.gov.sgcd.pm.entity.*;
+import ao.gov.sgcd.pm.mapper.TaskExecutionMapper;
 import ao.gov.sgcd.pm.mapper.TaskMapper;
 import ao.gov.sgcd.pm.mapper.TaskNoteMapper;
 import ao.gov.sgcd.pm.repository.SprintReportRepository;
 import ao.gov.sgcd.pm.repository.SprintRepository;
+import ao.gov.sgcd.pm.repository.TaskExecutionRepository;
 import ao.gov.sgcd.pm.repository.TaskRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,6 +42,9 @@ class TaskServiceTest {
     private TaskRepository taskRepository;
 
     @Mock
+    private TaskExecutionRepository executionRepository;
+
+    @Mock
     private SprintRepository sprintRepository;
 
     @Mock
@@ -50,6 +55,9 @@ class TaskServiceTest {
 
     @Mock
     private TaskNoteMapper noteMapper;
+
+    @Mock
+    private TaskExecutionMapper executionMapper;
 
     @InjectMocks
     private TaskService taskService;

@@ -45,6 +45,9 @@ class ReportServiceTest {
     @Spy
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    @Mock
+    private PdfExportService pdfExportService;
+
     @InjectMocks
     private ReportService reportService;
 
