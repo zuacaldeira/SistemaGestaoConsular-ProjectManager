@@ -1,23 +1,23 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { MatSidenavModule, MatSidenav } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { AuthService } from '../../core/services/auth.service';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, MatSidenavModule, MatToolbarModule, MatListModule, MatIconModule, MatButtonModule],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, MatToolbarModule, MatListModule, MatIconModule, MatButtonModule],
   template: `
     <div class="layout">
       <mat-toolbar class="header">
         @if (isMobile) {
-          <button mat-icon-button (click)="sidenav.toggle()">
+          <button mat-icon-button (click)="sidebarOpen = !sidebarOpen">
             <mat-icon>menu</mat-icon>
           </button>
         }
@@ -29,44 +29,44 @@ import { Subscription } from 'rxjs';
         </button>
       </mat-toolbar>
 
-      <mat-sidenav-container class="content-area">
-        <mat-sidenav #sidenav
-          [mode]="isMobile ? 'over' : 'side'"
-          [opened]="!isMobile"
-          [fixedInViewport]="isMobile"
-          fixedTopGap="64"
-          class="sidebar">
-          <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="onNavClick()">
-            <mat-icon>dashboard</mat-icon> Dashboard
-          </a>
-          <a routerLink="/progress" routerLinkActive="active" (click)="onNavClick()">
-            <mat-icon>trending_up</mat-icon> Progresso
-          </a>
-          <a routerLink="/sprints" routerLinkActive="active" (click)="onNavClick()">
-            <mat-icon>flag</mat-icon> Sprints
-          </a>
-          <a routerLink="/tasks" routerLinkActive="active" (click)="onNavClick()">
-            <mat-icon>task_alt</mat-icon> Tarefas
-          </a>
-          <a routerLink="/prompts" routerLinkActive="active" (click)="onNavClick()">
-            <mat-icon>smart_toy</mat-icon> Prompts
-          </a>
-          <a routerLink="/calendar" routerLinkActive="active" (click)="onNavClick()">
-            <mat-icon>calendar_month</mat-icon> Calendário
-          </a>
-          <a routerLink="/reports" routerLinkActive="active" (click)="onNavClick()">
-            <mat-icon>assessment</mat-icon> Relatórios
-          </a>
-          <div class="divider"></div>
-          <a routerLink="/stakeholder" target="_blank" (click)="onNavClick()">
-            <mat-icon>visibility</mat-icon> Stakeholder
-          </a>
-        </mat-sidenav>
+      <div class="content-area">
+        @if (sidebarOpen || !isMobile) {
+          <nav class="sidebar" [class.sidebar-mobile]="isMobile">
+            <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="onNavClick()">
+              <mat-icon>dashboard</mat-icon> Dashboard
+            </a>
+            <a routerLink="/progress" routerLinkActive="active" (click)="onNavClick()">
+              <mat-icon>trending_up</mat-icon> Progresso
+            </a>
+            <a routerLink="/sprints" routerLinkActive="active" (click)="onNavClick()">
+              <mat-icon>flag</mat-icon> Sprints
+            </a>
+            <a routerLink="/tasks" routerLinkActive="active" (click)="onNavClick()">
+              <mat-icon>task_alt</mat-icon> Tarefas
+            </a>
+            <a routerLink="/prompts" routerLinkActive="active" (click)="onNavClick()">
+              <mat-icon>smart_toy</mat-icon> Prompts
+            </a>
+            <a routerLink="/calendar" routerLinkActive="active" (click)="onNavClick()">
+              <mat-icon>calendar_month</mat-icon> Calendário
+            </a>
+            <a routerLink="/reports" routerLinkActive="active" (click)="onNavClick()">
+              <mat-icon>assessment</mat-icon> Relatórios
+            </a>
+            <div class="divider"></div>
+            <a routerLink="/stakeholder" target="_blank" (click)="onNavClick()">
+              <mat-icon>visibility</mat-icon> Stakeholder
+            </a>
+          </nav>
+        }
+        @if (isMobile && sidebarOpen) {
+          <div class="overlay" (click)="sidebarOpen = false"></div>
+        }
 
-        <mat-sidenav-content class="main-content">
+        <main class="main-content">
           <router-outlet />
-        </mat-sidenav-content>
-      </mat-sidenav-container>
+        </main>
+      </div>
     </div>
   `,
   styles: [`
@@ -86,7 +86,7 @@ import { Subscription } from 'rxjs';
     }
     .spacer { flex: 1; }
     .user-info { margin-right: 8px; font-size: 14px; opacity: 0.8; }
-    .content-area { flex: 1; }
+    .content-area { display: flex; flex: 1; overflow: hidden; position: relative; }
     .sidebar {
       width: 220px;
       background: var(--surface);
@@ -95,6 +95,21 @@ import { Subscription } from 'rxjs';
       flex-direction: column;
       padding: 8px;
       overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .sidebar-mobile {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 50;
+      box-shadow: 4px 0 12px rgba(0,0,0,0.15);
+    }
+    .overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 40;
     }
     .sidebar a {
       display: flex;
@@ -111,7 +126,7 @@ import { Subscription } from 'rxjs';
     .sidebar a.active { background: var(--angola-red); color: white; }
     .sidebar a.active mat-icon { color: white; }
     .divider { height: 1px; background: var(--border-light); margin: 8px 16px; }
-    .main-content { padding: 24px; }
+    .main-content { flex: 1; overflow-y: auto; padding: 24px; }
 
     @media (max-width: 768px) {
       .user-info { display: none; }
@@ -120,8 +135,8 @@ import { Subscription } from 'rxjs';
   `]
 })
 export class LayoutComponent implements OnInit, OnDestroy {
-  @ViewChild('sidenav') sidenav!: MatSidenav;
   isMobile = false;
+  sidebarOpen = false;
   private bpSub!: Subscription;
 
   constructor(
@@ -131,7 +146,12 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.bpSub = this.breakpointObserver.observe(['(max-width: 768px)'])
-      .subscribe(result => this.isMobile = result.matches);
+      .subscribe(result => {
+        this.isMobile = result.matches;
+        if (!result.matches) {
+          this.sidebarOpen = false;
+        }
+      });
   }
 
   ngOnDestroy(): void {
@@ -140,7 +160,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
   onNavClick(): void {
     if (this.isMobile) {
-      this.sidenav.close();
+      this.sidebarOpen = false;
     }
   }
 }
