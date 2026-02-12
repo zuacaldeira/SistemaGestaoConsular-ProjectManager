@@ -1,6 +1,7 @@
 package ao.gov.sgcd.pm.controller;
 
 import ao.gov.sgcd.pm.config.JwtTokenProvider;
+import ao.gov.sgcd.pm.config.LoginRateLimiter;
 import ao.gov.sgcd.pm.config.UserProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -41,6 +42,11 @@ class AuthControllerTest {
         }
 
         @Bean
+        public LoginRateLimiter loginRateLimiter() {
+            return new LoginRateLimiter();
+        }
+
+        @Bean
         public UserProperties userProperties() {
             PasswordEncoder encoder = new BCryptPasswordEncoder();
             UserProperties props = new UserProperties();
@@ -69,6 +75,7 @@ class AuthControllerTest {
     @Test
     void login_withValidAdminCredentials_shouldReturn200WithToken() throws Exception {
         when(tokenProvider.generateToken("admin", "DEVELOPER")).thenReturn("mock-jwt-token");
+        when(tokenProvider.generateRefreshToken("admin", "DEVELOPER")).thenReturn("mock-refresh-token");
         when(tokenProvider.getExpiration()).thenReturn(86400000L);
 
         mockMvc.perform(post("/v1/auth/login")
@@ -77,6 +84,7 @@ class AuthControllerTest {
                                 Map.of("username", "admin", "password", "admin123"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token", is("mock-jwt-token")))
+                .andExpect(jsonPath("$.refreshToken", is("mock-refresh-token")))
                 .andExpect(jsonPath("$.role", is("DEVELOPER")))
                 .andExpect(jsonPath("$.expiresIn", is(86400000)));
     }
@@ -84,6 +92,7 @@ class AuthControllerTest {
     @Test
     void login_withValidStakeholderCredentials_shouldReturn200WithToken() throws Exception {
         when(tokenProvider.generateToken("stakeholder", "STAKEHOLDER")).thenReturn("mock-stakeholder-token");
+        when(tokenProvider.generateRefreshToken("stakeholder", "STAKEHOLDER")).thenReturn("mock-refresh-token");
         when(tokenProvider.getExpiration()).thenReturn(86400000L);
 
         mockMvc.perform(post("/v1/auth/login")
@@ -92,6 +101,7 @@ class AuthControllerTest {
                                 Map.of("username", "stakeholder", "password", "stakeholder2026"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token", is("mock-stakeholder-token")))
+                .andExpect(jsonPath("$.refreshToken", is("mock-refresh-token")))
                 .andExpect(jsonPath("$.role", is("STAKEHOLDER")))
                 .andExpect(jsonPath("$.expiresIn", is(86400000)));
     }

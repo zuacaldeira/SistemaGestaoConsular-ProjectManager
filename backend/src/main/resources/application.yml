@@ -24,7 +24,8 @@ spring:
 sgcd-pm:
   jwt:
     secret: ${JWT_SECRET:sgcd-pm-secret-key-change-in-production-2026}
-    expiration: 86400000
+    expiration: 3600000
+    refresh-expiration: 604800000
   stakeholder:
     token: ${STAKEHOLDER_TOKEN:sgcd-stakeholder-2026}
   users:

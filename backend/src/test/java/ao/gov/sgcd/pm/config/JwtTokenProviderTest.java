@@ -14,7 +14,7 @@ class JwtTokenProviderTest {
 
     @BeforeEach
     void setUp() {
-        tokenProvider = new JwtTokenProvider(SECRET, EXPIRATION);
+        tokenProvider = new JwtTokenProvider(SECRET, EXPIRATION, 604800000L);
     }
 
     @Test
@@ -97,7 +97,7 @@ class JwtTokenProviderTest {
     @Test
     void validateToken_shouldReturnFalseForExpiredToken() throws InterruptedException {
         // Create provider with very short expiration (1 ms)
-        JwtTokenProvider shortLivedProvider = new JwtTokenProvider(SECRET, 1L);
+        JwtTokenProvider shortLivedProvider = new JwtTokenProvider(SECRET, 1L, 604800000L);
         String token = shortLivedProvider.generateToken("admin", "DEVELOPER");
 
         // Wait for token to expire
@@ -109,7 +109,7 @@ class JwtTokenProviderTest {
     @Test
     void validateToken_shouldReturnFalseForTokenSignedWithDifferentKey() {
         JwtTokenProvider otherProvider = new JwtTokenProvider(
-                "a-completely-different-secret-key-32-bytes", EXPIRATION);
+                "a-completely-different-secret-key-32-bytes", EXPIRATION, 604800000L);
         String token = otherProvider.generateToken("admin", "DEVELOPER");
 
         assertFalse(tokenProvider.validateToken(token));
@@ -122,7 +122,7 @@ class JwtTokenProviderTest {
 
     @Test
     void getExpiration_shouldReturnCustomExpiration() {
-        JwtTokenProvider customProvider = new JwtTokenProvider(SECRET, 3600000L);
+        JwtTokenProvider customProvider = new JwtTokenProvider(SECRET, 3600000L, 604800000L);
 
         assertEquals(3600000L, customProvider.getExpiration());
     }
@@ -130,7 +130,7 @@ class JwtTokenProviderTest {
     @Test
     void constructor_shouldPadShortKey() {
         // Key shorter than 32 bytes should be padded
-        JwtTokenProvider shortKeyProvider = new JwtTokenProvider("short", EXPIRATION);
+        JwtTokenProvider shortKeyProvider = new JwtTokenProvider("short", EXPIRATION, 604800000L);
 
         String token = shortKeyProvider.generateToken("admin", "DEVELOPER");
         assertNotNull(token);

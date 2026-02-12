@@ -27,7 +27,7 @@ public class StakeholderController {
     @GetMapping
     public ResponseEntity<StakeholderDashboardDTO> getDashboard(
             @RequestParam(required = false) String token) {
-        if (token != null && !token.equals(validToken)) {
+        if (token == null || !token.equals(validToken)) {
             return ResponseEntity.status(403).build();
         }
         return ResponseEntity.ok(dashboardService.getStakeholderDashboard());

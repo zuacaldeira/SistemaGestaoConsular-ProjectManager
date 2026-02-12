@@ -61,14 +61,9 @@ class StakeholderControllerTest {
     }
 
     @Test
-    void getDashboard_withoutToken_shouldReturn200() throws Exception {
-        when(dashboardService.getStakeholderDashboard()).thenReturn(buildSampleDashboard());
-
+    void getDashboard_withoutToken_shouldReturn403() throws Exception {
         mockMvc.perform(get("/v1/stakeholder"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.projectName", is("SGCD - Sistema de Gestao Consular Digital")))
-                .andExpect(jsonPath("$.overallProgress", is(25.5)))
-                .andExpect(jsonPath("$.totalSessions", is(204)));
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -141,7 +136,8 @@ class StakeholderControllerTest {
 
         when(dashboardService.getStakeholderDashboard()).thenReturn(dashboard);
 
-        mockMvc.perform(get("/v1/stakeholder"))
+        mockMvc.perform(get("/v1/stakeholder")
+                        .param("token", "sgcd-stakeholder-2026"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.overallProgress", is(50.0)))
                 .andExpect(jsonPath("$.completedSessions", is(102)))

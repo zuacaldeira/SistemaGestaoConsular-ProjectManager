@@ -48,9 +48,9 @@ class SecurityConfigTest {
     }
 
     @Test
-    void stakeholderEndpoint_shouldBeAccessibleWithoutAuthentication() throws Exception {
+    void stakeholderEndpoint_withoutToken_shouldReturn403() throws Exception {
         mockMvc.perform(get("/v1/stakeholder"))
-                .andExpect(status().isOk());
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -167,7 +167,7 @@ class SecurityConfigTest {
     void tasks_withExpiredJwt_shouldReturn403() throws Exception {
         // Create a token with 1ms expiration that will be expired by the time we use it
         JwtTokenProvider shortLived = new JwtTokenProvider(
-                "test-secret-key-for-unit-testing-minimum-32-bytes", 1L);
+                "test-secret-key-for-unit-testing-minimum-32-bytes", 1L, 604800000L);
         String expiredToken = shortLived.generateToken("admin", "DEVELOPER");
 
         // Small delay to ensure expiration

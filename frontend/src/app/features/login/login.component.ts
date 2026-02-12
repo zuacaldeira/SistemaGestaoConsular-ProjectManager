@@ -90,8 +90,10 @@ export class LoginComponent {
       next: () => {
         this.router.navigate(['/']);
       },
-      error: () => {
-        this.error = 'Credenciais inválidas';
+      error: (err) => {
+        this.error = err.status === 429
+          ? 'Demasiadas tentativas. Tente novamente em 5 minutos.'
+          : 'Credenciais inválidas';
         this.loading = false;
       }
     });

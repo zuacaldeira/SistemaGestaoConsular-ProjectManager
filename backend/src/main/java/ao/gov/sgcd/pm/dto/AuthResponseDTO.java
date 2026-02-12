@@ -7,6 +7,7 @@ import lombok.*;
 @Builder
 public class AuthResponseDTO {
     private String token;
+    private String refreshToken;
     private String role;
     private Long expiresIn;
 }

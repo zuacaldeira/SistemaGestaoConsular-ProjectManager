@@ -31,10 +31,11 @@ class AuthResponseDTOTest {
     @Test
     void allArgsConstructor_shouldSetAllFields() {
         AuthResponseDTO dto = new AuthResponseDTO(
-                "jwt-token-value", "STAKEHOLDER", 3600L
+                "jwt-token-value", "refresh-token-value", "STAKEHOLDER", 3600L
         );
 
         assertEquals("jwt-token-value", dto.getToken());
+        assertEquals("refresh-token-value", dto.getRefreshToken());
         assertEquals("STAKEHOLDER", dto.getRole());
         assertEquals(3600L, dto.getExpiresIn());
     }
