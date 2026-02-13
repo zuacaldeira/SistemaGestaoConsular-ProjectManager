@@ -30,6 +30,7 @@ services:
       STAKEHOLDER_TOKEN: ${STAKEHOLDER_TOKEN}
       CORS_ORIGINS: ${CORS_ORIGINS}
       GITHUB_WEBHOOK_SECRET: ${GITHUB_WEBHOOK_SECRET}
+      MONITOR_PM_FRONTEND: http://sgcd-pm-frontend:80
     depends_on:
       mysql:
         condition: service_healthy
