@@ -6,6 +6,7 @@ import ao.gov.sgcd.pm.mapper.BlockedDayMapper;
 import ao.gov.sgcd.pm.mapper.SprintMapper;
 import ao.gov.sgcd.pm.mapper.TaskMapper;
 import ao.gov.sgcd.pm.repository.BlockedDayRepository;
+import ao.gov.sgcd.pm.repository.ProjectBudgetRepository;
 import ao.gov.sgcd.pm.repository.SprintRepository;
 import ao.gov.sgcd.pm.repository.TaskRepository;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,9 @@ class DashboardServiceTest {
 
     @Mock
     private BlockedDayRepository blockedDayRepository;
+
+    @Mock
+    private ProjectBudgetRepository projectBudgetRepository;
 
     @Mock
     private ProjectConfigService projectConfigService;

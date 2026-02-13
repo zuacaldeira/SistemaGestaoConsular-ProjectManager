@@ -23,6 +23,8 @@ export const routes: Routes = [
       { path: 'tasks/:id', loadComponent: () => import('./features/tasks/task-detail.component').then(m => m.TaskDetailComponent) },
       { path: 'prompts', loadComponent: () => import('./features/prompts/prompt-generator.component').then(m => m.PromptGeneratorComponent) },
       { path: 'calendar', loadComponent: () => import('./features/calendar/calendar.component').then(m => m.CalendarComponent) },
+      { path: 'monitor', loadComponent: () => import('./features/monitor/monitor.component').then(m => m.MonitorComponent) },
+      { path: 'budget', loadComponent: () => import('./features/budget/budget.component').then(m => m.BudgetComponent) },
       { path: 'reports', loadComponent: () => import('./features/reports/reports.component').then(m => m.ReportsComponent) },
     ]
   },

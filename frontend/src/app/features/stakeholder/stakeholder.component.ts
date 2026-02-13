@@ -11,12 +11,13 @@ import { AnimatedCounterComponent } from '../../shared/components/animated-count
 import { SkeletonLoaderComponent } from '../../shared/components/skeleton-loader.component';
 import { DatePtPipe } from '../../shared/pipes/date-pt.pipe';
 import { HoursPipe } from '../../shared/pipes/hours.pipe';
+import { EurPipe } from '../../shared/pipes/currency-eur.pipe';
 
 @Component({
   selector: 'app-stakeholder',
   standalone: true,
   imports: [CommonModule, MatCardModule, MatIconModule, MatButtonModule, ProgressBarComponent,
-    AnimatedCounterComponent, SkeletonLoaderComponent, DatePtPipe, HoursPipe],
+    AnimatedCounterComponent, SkeletonLoaderComponent, DatePtPipe, HoursPipe, EurPipe],
   template: `
     @if (data) {
       <div class="stakeholder-page">
@@ -120,6 +121,36 @@ import { HoursPipe } from '../../shared/pipes/hours.pipe';
           </div>
         }
 
+        <!-- Budget Summary -->
+        @if (data.budget) {
+          <h2>Orçamento</h2>
+          <div class="budget-row">
+            <mat-card class="budget-card card-hover">
+              <mat-icon>account_balance</mat-icon>
+              <div class="budget-val">{{ data.budget.totalBudget | eur }}</div>
+              <div class="budget-lbl">Orçamento Total</div>
+            </mat-card>
+            <mat-card class="budget-card card-hover">
+              <mat-icon>payments</mat-icon>
+              <div class="budget-val">{{ data.budget.totalSpent | eur }}</div>
+              <div class="budget-lbl">Gasto</div>
+            </mat-card>
+            <mat-card class="budget-card card-hover">
+              <mat-icon>savings</mat-icon>
+              <div class="budget-val" [class.budget-warning]="data.budget.remaining < 0">{{ data.budget.remaining | eur }}</div>
+              <div class="budget-lbl">Restante</div>
+            </mat-card>
+            <mat-card class="budget-card card-hover">
+              <mat-icon>donut_large</mat-icon>
+              <div class="budget-val">
+                <app-animated-counter [targetValue]="data.budget.budgetUsedPercent" [decimals]="1" suffix="%" />
+              </div>
+              <div class="budget-lbl">Utilizado</div>
+              <app-progress-bar [value]="data.budget.budgetUsedPercent" color="var(--angola-red)" />
+            </mat-card>
+          </div>
+        }
+
         <!-- Milestones -->
         <h2>Marcos do Projecto</h2>
         <div class="milestones">
@@ -186,6 +217,12 @@ import { HoursPipe } from '../../shared/pipes/hours.pipe';
     .ms-completed mat-icon { color: var(--color-green); }
     .ms-in_progress mat-icon { color: var(--color-blue); }
     .ms-future mat-icon { color: var(--text-muted); }
+    .budget-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+    .budget-card { padding: 20px; text-align: center; }
+    .budget-card mat-icon { color: var(--angola-gold); font-size: 28px; width: 28px; height: 28px; margin-bottom: 8px; }
+    .budget-val { font-size: 22px; font-weight: 700; }
+    .budget-lbl { font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-top: 4px; }
+    .budget-warning { color: #f44336; }
     .theme-toggle { position: absolute; top: 16px; right: 16px; color: var(--text-secondary); }
     .skeleton-stakeholder { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
     .skeleton-stakeholder .sh-header { text-align: center; margin-bottom: 32px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
@@ -195,6 +232,7 @@ import { HoursPipe } from '../../shared/pipes/hours.pipe';
     @media (max-width: 1024px) {
       .kpi-row { grid-template-columns: repeat(2, 1fr); }
       .sprint-grid { grid-template-columns: repeat(2, 1fr); }
+      .budget-row { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 600px) {
       .stakeholder-page { padding: 20px 12px; }
@@ -202,6 +240,7 @@ import { HoursPipe } from '../../shared/pipes/hours.pipe';
       .kpi-row { grid-template-columns: 1fr; }
       .sprint-grid { grid-template-columns: 1fr; }
       .weekly-row { grid-template-columns: 1fr; }
+      .budget-row { grid-template-columns: 1fr; }
       .timeline { display: none; }
     }
   `]

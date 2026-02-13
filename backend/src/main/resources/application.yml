@@ -37,6 +37,34 @@ sgcd-pm:
       role: STAKEHOLDER
   webhook:
     secret: ${GITHUB_WEBHOOK_SECRET:}
+  monitor:
+    cache-ttl-seconds: 30
+    timeout-ms: 5000
+    services:
+      - name: PM Backend
+        url: ${MONITOR_PM_BACKEND:http://localhost:8090/api/v1/dashboard/stakeholder}
+        type: HTTP
+        group: PM
+      - name: PM Frontend
+        url: ${MONITOR_PM_FRONTEND:http://localhost:3000}
+        type: HTTP
+        group: PM
+      - name: PM MySQL
+        url: jdbc:mysql://localhost:3309/sgcd_pm
+        type: MYSQL
+        group: PM
+      - name: SGCD Backend
+        url: ${MONITOR_MVP_BACKEND:http://localhost:8080}
+        type: HTTP
+        group: MVP
+      - name: SGCD Backoffice
+        url: ${MONITOR_MVP_BACKOFFICE:http://localhost:4200}
+        type: HTTP
+        group: MVP
+      - name: SGCD Portal
+        url: ${MONITOR_MVP_PORTAL:http://localhost:4300}
+        type: HTTP
+        group: MVP
   cors:
     allowed-origins: ${CORS_ORIGINS:http://localhost:4201,http://localhost:4200}
 

@@ -3,7 +3,9 @@ package ao.gov.sgcd.pm.service;
 import ao.gov.sgcd.pm.dto.*;
 import ao.gov.sgcd.pm.entity.*;
 import ao.gov.sgcd.pm.mapper.*;
+import ao.gov.sgcd.pm.entity.ProjectBudget;
 import ao.gov.sgcd.pm.repository.BlockedDayRepository;
+import ao.gov.sgcd.pm.repository.ProjectBudgetRepository;
 import ao.gov.sgcd.pm.repository.SprintRepository;
 import ao.gov.sgcd.pm.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ public class DashboardService {
     private final SprintRepository sprintRepository;
     private final TaskRepository taskRepository;
     private final BlockedDayRepository blockedDayRepository;
+    private final ProjectBudgetRepository projectBudgetRepository;
     private final ProjectConfigService projectConfigService;
     private final SprintMapper sprintMapper;
     private final TaskMapper taskMapper;
@@ -261,6 +264,25 @@ public class DashboardService {
                 .map(Task::getActualHours)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        // Budget summary
+        StakeholderDashboardDTO.BudgetSummaryDTO budgetSummary = projectBudgetRepository.findFirstByOrderByIdAsc()
+                .map(pb -> {
+                    BigDecimal totalSpent = totalHoursSpent.multiply(pb.getHourlyRate())
+                            .setScale(2, RoundingMode.HALF_UP);
+                    BigDecimal budgetRemaining = pb.getTotalBudget().subtract(totalSpent);
+                    double budgetUsedPct = pb.getTotalBudget().compareTo(BigDecimal.ZERO) > 0
+                            ? totalSpent.divide(pb.getTotalBudget(), 4, RoundingMode.HALF_UP).doubleValue() * 100
+                            : 0;
+                    return StakeholderDashboardDTO.BudgetSummaryDTO.builder()
+                            .totalBudget(pb.getTotalBudget())
+                            .totalSpent(totalSpent)
+                            .remaining(budgetRemaining)
+                            .budgetUsedPercent(Math.round(budgetUsedPct * 10) / 10.0)
+                            .currency(pb.getCurrency())
+                            .build();
+                })
+                .orElse(null);
+
         return StakeholderDashboardDTO.builder()
                 .projectName("SGCD — Sistema de Gestão Consular Digital")
                 .client("Embaixada da República de Angola")
@@ -279,6 +301,7 @@ public class DashboardService {
                         .hoursThisWeek(weekHours)
                         .tasksCompletedThisWeek(weekCompleted)
                         .build())
+                .budget(budgetSummary)
                 .lastUpdated(LocalDateTime.now())
                 .build();
     }

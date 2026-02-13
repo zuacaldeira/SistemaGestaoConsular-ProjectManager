@@ -36,6 +36,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/v1/stakeholder/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/v1/webhooks/**").permitAll()
                 .requestMatchers(HttpMethod.PATCH, "/v1/**").hasRole("DEVELOPER")
+                .requestMatchers(HttpMethod.PUT, "/v1/**").hasRole("DEVELOPER")
                 .requestMatchers(HttpMethod.POST, "/v1/**").hasRole("DEVELOPER")
                 .requestMatchers(HttpMethod.DELETE, "/v1/**").hasRole("DEVELOPER")
                 .anyRequest().authenticated()

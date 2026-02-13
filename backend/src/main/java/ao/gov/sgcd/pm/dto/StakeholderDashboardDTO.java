@@ -23,6 +23,7 @@ public class StakeholderDashboardDTO {
     private List<StakeholderSprintDTO> sprints;
     private List<MilestoneDTO> milestones;
     private WeeklyActivityDTO weeklyActivity;
+    private BudgetSummaryDTO budget;
     private LocalDateTime lastUpdated;
 
     @Data
@@ -60,5 +61,16 @@ public class StakeholderDashboardDTO {
         private Integer sessionsThisWeek;
         private BigDecimal hoursThisWeek;
         private Integer tasksCompletedThisWeek;
+    }
+
+    @Data
+    @NoArgsConstructor @AllArgsConstructor
+    @Builder
+    public static class BudgetSummaryDTO {
+        private BigDecimal totalBudget;
+        private BigDecimal totalSpent;
+        private BigDecimal remaining;
+        private Double budgetUsedPercent;
+        private String currency;
     }
 }

@@ -53,7 +53,16 @@ export interface StakeholderDashboard {
   sprints: StakeholderSprint[];
   milestones: Milestone[];
   weeklyActivity: WeeklyActivity;
+  budget?: BudgetSummary;
   lastUpdated: string;
+}
+
+export interface BudgetSummary {
+  totalBudget: number;
+  totalSpent: number;
+  remaining: number;
+  budgetUsedPercent: number;
+  currency: string;
 }
 
 export interface StakeholderSprint {

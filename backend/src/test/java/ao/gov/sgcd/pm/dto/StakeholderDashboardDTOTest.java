@@ -90,7 +90,7 @@ class StakeholderDashboardDTOTest {
         StakeholderDashboardDTO dto = new StakeholderDashboardDTO(
                 "SGCD MVP", "Embaixada de Angola", 45.0, 204, 92,
                 680, BigDecimal.valueOf(310.0), startDate, targetDate,
-                199L, sprints, milestones, weeklyActivity, lastUpdated
+                199L, sprints, milestones, weeklyActivity, null, lastUpdated
         );
 
         assertEquals("SGCD MVP", dto.getProjectName());

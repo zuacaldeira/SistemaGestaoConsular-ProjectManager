@@ -57,6 +57,12 @@ import { Subscription } from 'rxjs';
             <a routerLink="/reports" routerLinkActive="active" (click)="onNavClick()">
               <mat-icon>assessment</mat-icon> Relatórios
             </a>
+            <a routerLink="/monitor" routerLinkActive="active" (click)="onNavClick()">
+              <mat-icon>monitor_heart</mat-icon> Monitor
+            </a>
+            <a routerLink="/budget" routerLinkActive="active" (click)="onNavClick()">
+              <mat-icon>account_balance</mat-icon> Custos
+            </a>
             <div class="divider"></div>
             <a routerLink="/stakeholder" target="_blank" (click)="onNavClick()">
               <mat-icon>visibility</mat-icon> Stakeholder
